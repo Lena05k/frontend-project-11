@@ -2,32 +2,26 @@
   "name": "@hexlet/code",
   "version": "0.1.0",
   "description": "RSS aggregator",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "NODE_ENV=production webpack --mode production"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hexlet-boilerplates/webpack-package.git"
+    "url": "git+https://github.com/Lena05k/frontend-project-11.git"
   },
-  "author": "Kirill Mokevnin",
+  "author": "krupoderova Elena",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Lena05k/frontend-project-11/issues"
   },
   "homepage": "https://github.com/Lena05k/frontend-project-11#readme",
-  "jest": {
-    "verbose": true,
-    "testEnvironmentOptions": {
-      "url": "http://localhost/"
-    },
-    "testEnvironment": "jsdom"
-  },
-  "main": "webpack-package-main/src/init.js",
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@babel/eslint-parser": "^7.19.1",
     "@babel/preset-env": "^7.20.2",
+    "@webpack-cli/generators": "^3.0.1",
     "babel-jest": "^29.3.1",
     "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
