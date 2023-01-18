@@ -10,6 +10,8 @@ env:
   jest: true
   browser: true
 
+parser: "@babel/eslint-parser"
+
 extends:
   - "airbnb-base"
   - "plugin:jest/recommended"
@@ -17,4 +19,3 @@ extends:
 rules:
   no-console: 0
   import/extensions: 0
-  no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }]
