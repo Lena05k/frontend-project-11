@@ -1,39 +1,36 @@
-// import * as yup from 'yup';
+const parsePost = (post) => {
+  const link = post.querySelector('link').textContent;
+  const title = post.querySelector('title').textContent;
+  const description = post.querySelector('description').textContent;
+  const date = post.querySelector('pubDate').textContent;
+  return {
+    link,
+    title,
+    description,
+    date,
+  };
+};
 
-// const isEmptyField = (field) => yup.object({ 
-//   url: yup
-//       .string()
-//       .required() 
-// }).isValidSync(field);
-//
-// const isUrl = (field) => yup.object({ 
-//   url: yup
-//       .string()
-//       .url() 
-// }).isValidSync(field);
-//
-// const isAdd = (field, state) => yup.object({
-//   url: yup
-//       .string()
-//       .notOneOf(state.site),
-// }).isValidSync(field);
+const parse = (rss, url) => {
+  const parser = new DOMParser();
+  const data = parser.parseFromString(rss, 'text/xml');
+  const parseError = data.querySelector('parsererror');
+  if (parseError) {
+    const error = new Error(parseError.textContent);
+    error.isParsingError = true;
+    throw error;
+  }
 
-// export default (field, state) => {
-//   const fieldStatus = isEmptyField(field);
-//   const urlStatus = isUrl(field);
-//   const addStatus = isAdd(field);
-//  
-//   if (!fieldStatus) {
-//     state.status = 'empty field';
-//     return false;
-//   }
-//   if (!urlStatus) {
-//     state.status = 'incorrect URL';
-//     return false;
-//   }
-//   if (!addStatus) {
-//     state.status = 'relapse RSS';
-//     return false;
-//   }
-//   return true;
-// }
+  const feedTitle = data.querySelector('title').textContent;
+  const feedDescription = data.querySelector('description').textContent;
+  const feed = {
+    link: url,
+    title: feedTitle,
+    description: feedDescription,
+  };
+
+  const posts = [...data.querySelectorAll('item')].map(parsePost);
+  return { feed, posts };
+};
+
+export default parse;
