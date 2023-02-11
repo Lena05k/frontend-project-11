@@ -4,13 +4,7 @@ import axios from 'axios';
 import { uniqueId } from 'lodash';
 import render from './render.js';
 import parse from './rss.js';
-
-const validate = (input, watchedState) => {
-  const strSchema = yup.string().url().required();
-  const links = watchedState.feeds.map((feed) => feed.link);
-  const uniqueSchema = yup.mixed().notOneOf(links);
-  return strSchema.validate(input).then((url) => uniqueSchema.validate(url));
-};
+import resources from './locales';
 
 const getData = (url) => {
   const proxyUrl = new URL('/get', 'https://allorigins.hexlet.app');
@@ -38,14 +32,14 @@ const handleData = (data, watchedState) => {
 const updatePosts = (watchedState) => {
   const promises = watchedState.feeds.map((feed) => getData(feed.link).then((response) => {
     const { posts } = parse(response.data.contents);
-    const displayedPostLinks = watchedState.posts.map((post) => post.link);
+    const postsFromState = watchedState.data.posts;
+    const postsWithCurrentId = postsFromState.filter((post) => post.feedId === feed.id);
+    const displayedPostLinks = postsWithCurrentId.map((post) => post.link);
     const newPosts = posts.filter((post) => !displayedPostLinks.includes(post.link));
     addIds(newPosts, feed.id);
-    watchedState.posts.unshift(...newPosts.flat());
+    watchedState.posts.unshift(...newPosts);
     return newPosts;
   }));
-
-  console.log('promises', promises);
 
   return Promise.all(promises).then(() => setTimeout(updatePosts, 5000, watchedState));
 };
@@ -62,7 +56,7 @@ const handleError = (error) => {
   return error.message.key ?? 'unknown';
 };
 
-const app = (i18next) => {
+const modulApp = (i18next) => {
   const state = {
     formState: 'filling',
     error: null,
@@ -87,7 +81,7 @@ const app = (i18next) => {
   };
 
   const watchedState = onChange(state, render(state, elements, i18next));
-
+  const makeSchema = (validatedLinks) => yup.string().required().url().notOneOf(validatedLinks);
   yup.setLocale({
     string: {
       url: () => ({ key: 'notUrl' }),
@@ -101,7 +95,9 @@ const app = (i18next) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const input = formData.get('url');
-    validate(input, watchedState)
+    const addedLinks = watchedState.feeds.map((feed) => feed.url);
+    const schema = makeSchema(addedLinks);
+    schema.validate(input)
       .then(() => {
         watchedState.error = null;
         watchedState.formState = 'sending';
@@ -118,15 +114,28 @@ const app = (i18next) => {
       });
   });
 
-  elements.postsList.addEventListener('click', (event) => {
-    const currentPost = watchedState.posts.find((post) => post.id === event.target.dataset.id);
-    if (currentPost) {
-      watchedState.uiState.viewedPostIds.add(currentPost.id);
-      watchedState.uiState.displayedPost = currentPost;
+  elements.postsList.addEventListener('click', (e) => {
+    const postId = e.target.dataset.id;
+    if (!postId) {
+      return;
     }
+    watchedState.uiState.viewedPostIds.add(postId.id);
+    watchedState.uiState.displayedPost = postId;
   });
 
   updatePosts(watchedState);
+};
+
+const app = (i18next) => {
+  const i18nextInstance = i18next.createInstance();
+  i18nextInstance.init({
+    lng: 'ru',
+    debug: false,
+    resources,
+  })
+    .then(() => {
+      modulApp(i18nextInstance);
+    });
 };
 
 export default app;
