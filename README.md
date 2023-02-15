@@ -1,4 +1,4 @@
-# [RSS aggregator](https://frontend-project-11-ofcqq3vbc-lena05k.vercel.app/)
+# [RSS aggregator](https://frontend-project-11-phi.vercel.app/)
 
 [![Actions Status](https://github.com/Lena05k/frontend-project-11/workflows/hexlet-check/badge.svg)](https://github.com/Lena05k/frontend-project-11/actions)
 [![github action status](https://github.com/hexlet-boilerplates/webpack-package/workflows/Node%20CI/badge.svg)](https://github.com/hexlet-boilerplates/webpack-package/actions)
