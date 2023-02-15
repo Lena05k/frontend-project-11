@@ -29,7 +29,7 @@ module.exports = {
         use: 'url-loader?limit=10000',
       },
       {
-        test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
+        test: /\.(ttf |eot|svg)(\?[\s\S]+)?$/,
         use: 'file-loader',
       },
       {
