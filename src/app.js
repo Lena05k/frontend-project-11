@@ -1,6 +1,7 @@
 import onChange from 'on-change';
 import * as yup from 'yup';
 import axios from 'axios';
+import i18next from 'i18next';
 import { uniqueId } from 'lodash';
 import render from './render.js';
 import parse from './rss.js';
@@ -56,7 +57,24 @@ const handleError = (error) => {
   return error.message.key ?? 'unknown';
 };
 
-const modulApp = (i18next) => {
+const app = async () => {
+  const i18nextInstance = i18next.createInstance();
+
+  await i18nextInstance.init({
+    lng: 'ru',
+    debug: false,
+    resources,
+  });
+  
+  yup.setLocale({
+    string: {
+      url: () => ({ key: 'notUrl' }),
+    },
+    mixed: {
+      notOneOf: () => ({ key: 'alreadyInList' }),
+    },
+  });
+  
   const state = {
     formState: 'filling',
     error: null,
@@ -82,14 +100,6 @@ const modulApp = (i18next) => {
 
   const watchedState = onChange(state, render(state, elements, i18next));
   const makeSchema = (validatedLinks) => yup.string().required().url().notOneOf(validatedLinks);
-  yup.setLocale({
-    string: {
-      url: () => ({ key: 'notUrl' }),
-    },
-    mixed: {
-      notOneOf: () => ({ key: 'alreadyInList' }),
-    },
-  });
 
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -124,18 +134,6 @@ const modulApp = (i18next) => {
   });
 
   updatePosts(watchedState);
-};
-
-const app = (i18next) => {
-  const i18nextInstance = i18next.createInstance();
-  i18nextInstance.init({
-    lng: 'ru',
-    debug: false,
-    resources,
-  })
-    .then(() => {
-      modulApp(i18nextInstance);
-    });
 };
 
 export default app;
