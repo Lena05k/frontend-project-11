@@ -33,7 +33,7 @@ const handleData = (data, watchedState) => {
 const updatePosts = (watchedState) => {
   const promises = watchedState.feeds.map((feed) => getData(feed.link).then((response) => {
     const { posts } = parse(response.data.contents);
-    const postsFromState = watchedState.data.posts;
+    const postsFromState = watchedState.posts;
     const postsWithCurrentId = postsFromState.filter((post) => post.feedId === feed.id);
     const displayedPostLinks = postsWithCurrentId.map((post) => post.link);
     const newPosts = posts.filter((post) => !displayedPostLinks.includes(post.link));
@@ -65,7 +65,7 @@ const app = async () => {
     debug: false,
     resources,
   });
-  
+
   yup.setLocale({
     string: {
       url: () => ({ key: 'notUrl' }),
@@ -74,7 +74,7 @@ const app = async () => {
       notOneOf: () => ({ key: 'alreadyInList' }),
     },
   });
-  
+
   const state = {
     formState: 'filling',
     error: null,
