@@ -57,7 +57,6 @@ const handleError = (error) => {
 };
 
 const app = async () => {
-
   yup.setLocale({
     string: {
       url: () => ({ key: 'notUrl' }),
@@ -99,7 +98,10 @@ const app = async () => {
   })
     .then(() => {
       const watchedState = onChange(state, render(state, elements, i18nextInstance));
-      const makeSchema = (validatedLinks) => yup.string().required().url().notOneOf(validatedLinks);
+      const makeSchema = (validatedLinks) => yup.string()
+        .required()
+        .url()
+        .notOneOf(validatedLinks);
 
       elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
