@@ -75,6 +75,18 @@ const app = async () => {
     },
   });
 
+  const handleError = (error) => {
+    if (error.isParsingError) {
+      return 'notRss';
+    }
+
+    if (axios.isAxiosError(error)) {
+      return 'networkError';
+    }
+
+    return error.message.key ?? 'unknown';
+  };
+
   const state = {
     formState: 'filling',
     error: null,
@@ -98,15 +110,15 @@ const app = async () => {
     modalHref: document.querySelector('.full-article'),
   };
 
-  const watchedState = onChange(state, render(state, elements, i18next));
+  const watchedState = onChange(state, render(state, elements, i18nextInstance));
   const makeSchema = (validatedLinks) => yup.string().required().url().notOneOf(validatedLinks);
 
-  elements.form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const input = formData.get('url');
-    const addedLinks = watchedState.feeds.map((feed) => feed.url);
+  elements.form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const addedLinks = watchedState.feeds.map((feed) => feed.link);
     const schema = makeSchema(addedLinks);
+    const formData = new FormData(e.target);
+    const input = formData.get('url');
     schema.validate(input)
       .then(() => {
         watchedState.error = null;
