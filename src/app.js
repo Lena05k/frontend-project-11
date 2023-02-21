@@ -16,9 +16,8 @@ const getData = (url) => {
 
 const addIds = (posts, feedId) => {
   posts.forEach((post) => {
-    const result = { ...post };
-    result.id = uniqueId();
-    result.feedId = feedId;
+    post.id = uniqueId();
+    post.feedId = feedId;
   });
 };
 
@@ -58,13 +57,6 @@ const handleError = (error) => {
 };
 
 const app = async () => {
-  const i18nextInstance = i18next.createInstance();
-
-  await i18nextInstance.init({
-    lng: 'ru',
-    debug: false,
-    resources,
-  });
 
   yup.setLocale({
     string: {
@@ -74,18 +66,6 @@ const app = async () => {
       notOneOf: () => ({ key: 'alreadyInList' }),
     },
   });
-
-  const handleError = (error) => {
-    if (error.isParsingError) {
-      return 'notRss';
-    }
-
-    if (axios.isAxiosError(error)) {
-      return 'networkError';
-    }
-
-    return error.message.key ?? 'unknown';
-  };
 
   const state = {
     formState: 'filling',
@@ -110,42 +90,50 @@ const app = async () => {
     modalHref: document.querySelector('.full-article'),
   };
 
-  const watchedState = onChange(state, render(state, elements, i18nextInstance));
-  const makeSchema = (validatedLinks) => yup.string().required().url().notOneOf(validatedLinks);
+  const i18nextInstance = i18next.createInstance();
 
-  elements.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const addedLinks = watchedState.feeds.map((feed) => feed.link);
-    const schema = makeSchema(addedLinks);
-    const formData = new FormData(e.target);
-    const input = formData.get('url');
-    schema.validate(input)
-      .then(() => {
-        watchedState.error = null;
-        watchedState.formState = 'sending';
-        return getData(input);
-      })
-      .then((response) => {
-        const data = parse(response.data.contents, input);
-        handleData(data, watchedState);
-        watchedState.formState = 'added';
-      })
-      .catch((error) => {
-        watchedState.formState = 'invalid';
-        watchedState.error = handleError(error);
+  await i18nextInstance.init({
+    lng: 'ru',
+    debug: false,
+    resources,
+  })
+    .then(() => {
+      const watchedState = onChange(state, render(state, elements, i18nextInstance));
+      const makeSchema = (validatedLinks) => yup.string().required().url().notOneOf(validatedLinks);
+
+      elements.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const addedLinks = watchedState.feeds.map((feed) => feed.link);
+        const schema = makeSchema(addedLinks);
+        const formData = new FormData(e.target);
+        const input = formData.get('url');
+        schema.validate(input)
+          .then(() => {
+            watchedState.error = null;
+            watchedState.formState = 'sending';
+            return getData(input);
+          })
+          .then((response) => {
+            const data = parse(response.data.contents, input);
+            handleData(data, watchedState);
+            watchedState.formState = 'added';
+          })
+          .catch((error) => {
+            watchedState.formState = 'invalid';
+            watchedState.error = handleError(error);
+          });
       });
-  });
 
-  elements.postsList.addEventListener('click', (e) => {
-    const postId = e.target.dataset.id;
-    if (!postId) {
-      return;
-    }
-    watchedState.uiState.viewedPostIds.add(postId.id);
-    watchedState.uiState.displayedPost = postId;
-  });
+      elements.postsList.addEventListener('click', (event) => {
+        const currentPost = watchedState.posts.find((post) => post.id === event.target.dataset.id);
+        if (currentPost) {
+          watchedState.uiState.viewedPostIds.add(currentPost.id);
+          watchedState.uiState.displayedPost = currentPost;
+        }
+      });
 
-  updatePosts(watchedState);
+      updatePosts(watchedState);
+    });
 };
 
 export default app;

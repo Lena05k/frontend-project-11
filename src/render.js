@@ -30,8 +30,8 @@ const createButton = (post) => {
 const createPosts = (state) => {
   const posts = [];
   state.posts.forEach((post) => {
-    const item = document.createElement('li');
-    item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+    const liEl = document.createElement('li');
+    liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     const aEl = document.createElement('a');
     aEl.setAttribute('href', post.link);
     aEl.setAttribute('data-id', post.id);
@@ -44,9 +44,9 @@ const createPosts = (state) => {
     }
     aEl.textContent = post.title;
     const buttonEl = createButton(post);
-    item.append(aEl);
-    item.append(buttonEl);
-    posts.push(item);
+    liEl.append(aEl);
+    liEl.append(buttonEl);
+    posts.push(liEl);
   });
   return posts;
 };
@@ -107,7 +107,7 @@ const renderAdded = ({
   urlInput.focus();
 };
 
-const renderState = (elements, value, i18next) => {
+const renderState = (elements, i18next, value) => {
   switch (value) {
     case 'invalid':
       renderInvalid(elements);
@@ -124,10 +124,11 @@ const renderState = (elements, value, i18next) => {
   }
 };
 
-const renderError = (state, { feedback }, error, i18next) => {
+const renderError = (state, { feedback }, i18next, error) => {
   if (error === null) {
     return;
   }
+
   feedback.classList.add('text-danger');
   feedback.textContent = i18next.t(`errors.${state.error}`);
 };
@@ -164,7 +165,7 @@ const render = (state, elements, i18next) => (path, value) => {
       renderState(elements, i18next, value);
       break;
     case 'error':
-      renderError(state, elements, value, i18next);
+      renderError(state, elements, i18next, value);
       break;
     case 'feeds':
       renderFeeds(state, elements, i18next);
