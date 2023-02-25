@@ -38,7 +38,7 @@ const updatePosts = (watchedState) => {
     const newPosts = posts.filter((post) => !displayedPostLinks.includes(post.link));
     addIds(newPosts, feed.id);
     watchedState.posts.unshift(...newPosts);
-    return newPosts;
+    // return newPosts;
   }));
 
   return Promise.all(promises).then(() => setTimeout(updatePosts, 5000, watchedState));
@@ -56,10 +56,11 @@ const handleError = (error) => {
   return error.message.key ?? 'unknown';
 };
 
-const app = async () => {
+const app = () => {
   yup.setLocale({
     string: {
       url: () => ({ key: 'notUrl' }),
+      required: () => ({ key: 'empty' }),
     },
     mixed: {
       notOneOf: () => ({ key: 'alreadyInList' }),
@@ -90,8 +91,7 @@ const app = async () => {
   };
 
   const i18nextInstance = i18next.createInstance();
-
-  await i18nextInstance.init({
+  i18nextInstance.init({
     lng: 'ru',
     debug: false,
     resources,

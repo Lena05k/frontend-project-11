@@ -6,6 +6,7 @@ export default {
       notRss: 'Ресурс не содержит валидный RSS',
       networkError: 'Ошибка сети',
       unknown: 'Что-то пошло не так',
+      empty: 'Не должно быть пустым',
     },
     status: {
       sending: 'RSS загружается',
