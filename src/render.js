@@ -143,20 +143,20 @@ const renderPosts = (state, { postsList }, i18next) => {
   postsList.innerHTML = '';
   const posts = createList('posts', state, i18next);
   postsList.append(posts);
+
+  state.uiState.viewedPostIds.forEach((id) => {
+    const postElement = document.querySelector(`[data-id="${id}"]`);
+    if (postElement) {
+      postElement.classList.remove('fw-bold');
+      postElement.classList.add('fw-normal');
+    }
+  });
 };
 
 const renderDisplayedPost = (state, { modalHeader, modalBody, modalHref }, post) => {
   modalHeader.textContent = post.title;
   modalBody.textContent = post.description;
   modalHref.setAttribute('href', post.link);
-  state.uiState.viewedPostIds.add(post.id);
-};
-
-const renderViewedPosts = (postIds) => {
-  const lastId = [...postIds].at(-1);
-  const postElement = document.querySelector(`[data-id="${lastId}"]`);
-  postElement.classList.remove('fw-bold');
-  postElement.classList.add('fw-normal');
 };
 
 const render = (state, elements, i18next) => (path, value) => {
@@ -175,9 +175,6 @@ const render = (state, elements, i18next) => (path, value) => {
       break;
     case 'uiState.displayedPost':
       renderDisplayedPost(state, elements, value);
-      break;
-    case 'uiState.viewedPostIds':
-      renderViewedPosts(value);
       break;
     default:
       break;
