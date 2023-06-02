@@ -24,6 +24,10 @@ const createButton = (post, i18next) => {
   buttonEl.setAttribute('data-bs-target', '#modal');
   buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
   buttonEl.textContent = i18next.t('buttons.view');
+  buttonEl.addEventListener('click', () => {
+    const modalTitleEl = document.querySelector('.modal-title');
+    modalTitleEl.textContent = post.title;
+  });
   return buttonEl;
 };
 
