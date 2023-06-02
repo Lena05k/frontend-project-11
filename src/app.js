@@ -7,12 +7,14 @@ import render from './render.js';
 import parse from './rss.js';
 import resources from './locales';
 
-const getData = (url) => {
+const addProxy = (url) => {
   const proxyUrl = new URL('/get', 'https://allorigins.hexlet.app');
   proxyUrl.searchParams.append('disableCache', 'true');
   proxyUrl.searchParams.append('url', url);
-  return axios.get(proxyUrl);
+  return proxyUrl.toString();
 };
+
+const getData = (url) => axios.get(addProxy(url));
 
 const addIds = (posts, feedId) => {
   posts.forEach((post) => {
@@ -30,17 +32,21 @@ const handleData = (data, watchedState) => {
 };
 
 const updatePosts = (watchedState) => {
-  const promises = watchedState.feeds.map((feed) => getData(feed.link).then((response) => {
-    const { posts } = parse(response.data.contents);
-    const postsFromState = watchedState.posts;
-    const postsWithCurrentId = postsFromState.filter((post) => post.feedId === feed.id);
-    const displayedPostLinks = postsWithCurrentId.map((post) => post.link);
-    const newPosts = posts.filter((post) => !displayedPostLinks.includes(post.link));
-    addIds(newPosts, feed.id);
-    watchedState.posts.unshift(...newPosts);
-  }));
-
-  return Promise.all(promises).then(() => setTimeout(updatePosts, 5000, watchedState));
+  const promises = watchedState.feeds.map((feed) => getData(feed.link)
+    .then((response) => {
+      const { posts } = parse(response.data.contents);
+      const postsFromState = watchedState.posts;
+      const postsWithCurrentId = postsFromState.filter((post) => post.feedId === feed.id);
+      const displayedPostLinks = postsWithCurrentId.map((post) => post.link);
+      const newPosts = posts.filter((post) => !displayedPostLinks.includes(post.link));
+      addIds(newPosts, feed.id);
+      watchedState.posts.unshift(...newPosts);
+    })
+    .catch((error) => {
+      console.error(`Error fetching data from feed ${feed.id}:`, error);
+    })
+  );
+  return Promise.all(promises).finally(() => setTimeout(updatePosts, 5000, watchedState));
 };
 
 const handleError = (error) => {
@@ -126,10 +132,11 @@ const app = () => {
       });
 
       elements.postsList.addEventListener('click', (event) => {
-        const currentPost = watchedState.posts.find((post) => post.id === event.target.dataset.id);
+        const postId = event.target.dataset.id;
+        const currentPost = watchedState.posts.find((post) => post.id === postId);
         if (currentPost) {
-          watchedState.uiState.viewedPostIds.add(currentPost.id);
-          watchedState.uiState.displayedPost = currentPost;
+          watchedState.uiState.viewedPostIds.add(postId);
+          watchedState.uiState.displayedPostId = postId;
         }
       });
 
