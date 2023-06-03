@@ -44,8 +44,7 @@ const updatePosts = (watchedState) => {
     })
     .catch((error) => {
       console.error(`Error fetching data from feed ${feed.id}:`, error);
-    })
-  );
+    }));
   return Promise.all(promises).finally(() => setTimeout(updatePosts, 5000, watchedState));
 };
 
