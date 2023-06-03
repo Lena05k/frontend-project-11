@@ -89,6 +89,7 @@ const app = () => {
     feedback: document.querySelector('.feedback'),
     postsList: document.querySelector('.posts'),
     feedsList: document.querySelector('.feeds'),
+    modal: document.querySelector('.modal'),
     modalHeader: document.querySelector('.modal-header'),
     modalBody: document.querySelector('.modal-body'),
     modalHref: document.querySelector('.full-article'),
@@ -130,14 +131,13 @@ const app = () => {
           });
       });
 
-      elements.postsList.addEventListener('click', (event) => {
-        const currentPost = watchedState.posts.find((post) => post.id === event.target.dataset.id);
-        if (currentPost) {
-          watchedState.uiState.viewedPostIds.add(currentPost.id);
-          watchedState.uiState.displayedPost = currentPost;
+      elements.postsList.addEventListener('click', (e) => {
+        const postId = e.target.dataset.id;
+        if (postId) {
+          watchedState.uiState.displayedPost = postId;
+          watchedState.uiState.viewedPostIds.add(postId);
         }
       });
-
       updatePosts(watchedState);
     });
 };

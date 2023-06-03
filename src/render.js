@@ -24,10 +24,6 @@ const createButton = (post, i18next) => {
   buttonEl.setAttribute('data-bs-target', '#modal');
   buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
   buttonEl.textContent = i18next.t('buttons.view');
-  // buttonEl.addEventListener('click', () => {
-  //   const modalTitleEl = document.querySelector('.modal-title');
-  //   modalTitleEl.textContent = post.title;
-  // });
   return buttonEl;
 };
 
@@ -157,17 +153,12 @@ const renderPosts = (state, { postsList }, i18next) => {
   });
 };
 
-const renderDisplayedPost = (state, { modalHeader, modalBody, modalHref }, post) => {
-  modalHeader.textContent = post.title;
-  modalBody.textContent = post.description;
-  modalHref.setAttribute('href', post.link);
-};
-
-const renderViewedPosts = (postIds) => {
-  const lastId = [...postIds].at(-1);
-  const postElement = document.querySelector(`[data-id="${lastId}"]`);
-  postElement.classList.remove('fw-bold');
-  postElement.classList.add('fw-normal');
+const renderDisplayedPost = (state, { modalHeader, modalBody, modalHref }, id) => {
+  const posts = state.posts.filter((post) => post.id === id);
+  const [{ description, link, title }] = posts;
+  modalHeader.textContent = title;
+  modalBody.textContent = description;
+  modalHref.setAttribute('href', link);
 };
 
 const render = (state, elements, i18next) => (path, value) => {
@@ -182,13 +173,11 @@ const render = (state, elements, i18next) => (path, value) => {
       renderFeeds(state, elements, i18next);
       break;
     case 'posts':
+    case 'uiState.viewedPostIds':
       renderPosts(state, elements, i18next);
       break;
     case 'uiState.displayedPost':
       renderDisplayedPost(state, elements, value);
-      break;
-    case 'uiState.viewedPostIds':
-      renderViewedPosts(value);
       break;
     default:
       break;
