@@ -31,7 +31,6 @@ const createButton = (post, i18next) => {
   return buttonEl;
 };
 
-
 const createPosts = (state, i18next) => {
   const posts = [];
   state.posts.forEach((post) => {
