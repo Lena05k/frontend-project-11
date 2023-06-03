@@ -132,11 +132,10 @@ const app = () => {
       });
 
       elements.postsList.addEventListener('click', (event) => {
-        const postId = event.target.dataset.id;
-        const currentPost = watchedState.posts.find((post) => post.id === postId);
+        const currentPost = watchedState.posts.find((post) => post.id === event.target.dataset.id);
         if (currentPost) {
-          watchedState.uiState.viewedPostIds.add(postId);
-          watchedState.uiState.displayedPostId = postId;
+          watchedState.uiState.viewedPostIds.add(currentPost.id);
+          watchedState.uiState.displayedPost = currentPost;
         }
       });
 
