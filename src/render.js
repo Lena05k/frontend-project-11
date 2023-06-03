@@ -24,12 +24,13 @@ const createButton = (post, i18next) => {
   buttonEl.setAttribute('data-bs-target', '#modal');
   buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
   buttonEl.textContent = i18next.t('buttons.view');
-  buttonEl.addEventListener('click', () => {
-    const modalTitleEl = document.querySelector('.modal-title');
-    modalTitleEl.textContent = post.title;
-  });
+  // buttonEl.addEventListener('click', () => {
+  //   const modalTitleEl = document.querySelector('.modal-title');
+  //   modalTitleEl.textContent = post.title;
+  // });
   return buttonEl;
 };
+
 
 const createPosts = (state, i18next) => {
   const posts = [];
@@ -163,6 +164,13 @@ const renderDisplayedPost = (state, { modalHeader, modalBody, modalHref }, post)
   modalHref.setAttribute('href', post.link);
 };
 
+const renderViewedPosts = (postIds) => {
+  const lastId = [...postIds].at(-1);
+  const postElement = document.querySelector(`[data-id="${lastId}"]`);
+  postElement.classList.remove('fw-bold');
+  postElement.classList.add('fw-normal');
+};
+
 const render = (state, elements, i18next) => (path, value) => {
   switch (path) {
     case 'formState':
@@ -179,6 +187,9 @@ const render = (state, elements, i18next) => (path, value) => {
       break;
     case 'uiState.displayedPost':
       renderDisplayedPost(state, elements, value);
+      break;
+    case 'uiState.viewedPostIds':
+      renderViewedPosts(value);
       break;
     default:
       break;
