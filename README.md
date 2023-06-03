@@ -5,9 +5,6 @@
 
 ### Description
 Simple feed aggregator, which collect RSS feeds and then watched for a new posts.
-```
- Tech stack: JavaScript, Bootstrap, ESLint, GitHub Actions (CI), Webpack, Yup, on-change, i18next, Axios, All Origins, Lodash
-```
 
 ### To run locally on your machine (make sure that you have node.js and npm installed):
 #### install dependencies and let your system run the package
