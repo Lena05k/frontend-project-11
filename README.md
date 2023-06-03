@@ -16,3 +16,5 @@ Simple feed aggregator, which collect RSS feeds and then watched for a new posts
 `make build`
 #### run the webpack on localhost
 `make start`
+
+![img.png](public/img.png)
