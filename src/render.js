@@ -143,14 +143,6 @@ const renderPosts = (state, { postsList }, i18next) => {
   postsList.innerHTML = '';
   const posts = createList('posts', state, i18next);
   postsList.append(posts);
-
-  state.uiState.viewedPostIds.forEach((id) => {
-    const postElement = document.querySelector(`[data-id="${id}"]`);
-    if (postElement) {
-      postElement.classList.remove('fw-bold');
-      postElement.classList.add('fw-normal');
-    }
-  });
 };
 
 const renderDisplayedPost = (state, { modalHeader, modalBody, modalHref }, id) => {
